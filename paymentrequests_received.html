@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{/layout.html}">
+<head></head>
+
+<div layout:fragment="contents">
+    <section class="paymentrequests_received">
+        <h2>People that you owe</h2>
+        <p id="no_payment_requests_received" th:if="${#lists.isEmpty(paymentRequest)}">You don't owe anyone anything!</p>
+    </section>
+
+    <div id="paymentRequest" th:unless= "${#lists.isEmpty(paymentRequest)}">
+
+        <div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Who</th>
+                    <th>What</th>
+                    <th>Due in(Days)</th>
+                    <th>How much</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:block th:each="payment,iter: ${paymentRequest}" id="paymentBlock">
+                    <td th:text="${payment.getPersonRequestingPayment.getName}">Who</td>
+                    <td th:text="${payment.getDescription}">What</td>
+                    <td th:text="${payment.daysLeftToPay}">Due in(Days)</td>
+                    <td th:text="${payment.getAmountToPay}">How much</td>
+                    <td>
+                        <div th:id="'paid_' + ${iter.index+1}" th:if="${payment.isPaid}">
+                            <p>paid</p>
+                        </div>
+                        <form action="/payment.action" method="post" th:unless="${payment.isPaid}">
+                            <input type="hidden" id="request_id" name="request_id" th:attr="value=${payment.getId}">
+                            <input type="submit" name="switch" class="check" value="Pay" >
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+
+                <tfoot>
+                <td>Total unpaid</td>
+                <td></td>
+                <td></td>
+                <td id="grand_total" th:text="${total}">Total unpaid</td>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
